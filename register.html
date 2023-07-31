@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./dist/output.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <title>Document</title>
+  </head>
+  <body>
+    <nav class="flex justify-between p-2 shadow items-center">
+      <a href="/">
+        <img
+          src="https://www.xenonstack.com/hubfs/xenonstack-credit-card-fraud-detection.png"
+          alt="Your Logo"
+          class="w-20"
+        />
+      </a>
+
+      <ul class="flex gap-3">
+        <li>
+          <a href="/">Home</a>
+        </li>
+        <li>
+          <a href="/register">Register</a>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="container mx-auto px-4 py-8 relative">
+      <div class="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md">
+        <div id="banner"></div>
+
+        <h2 class="text-2xl font-semibold mb-4">Add Card Information</h2>
+        <form action="#" method="post" id="cardForm">
+          <!-- Cardholder's Name -->
+          <div class="mb-4">
+            <label for="cardholder" class="block font-medium text-gray-700"
+              >Cardholder's Name</label
+            >
+            <input
+              type="text"
+              id="cardholder"
+              name="cardholder"
+              class="mt-1 px-4 py-2 w-full border rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-500"
+            />
+          </div>
+
+          <!-- Card Number -->
+          <div class="mb-4">
+            <label for="cardnumber" class="block font-medium text-gray-700"
+              >Card Number</label
+            >
+            <input
+              type="number"
+              id="cardnumber"
+              name="cardnumber"
+              class="mt-1 px-4 py-2 w-full border rounded-lg appearance-none hover:appearance-none focus:ring focus:ring-blue-200 focus:border-blue-500"
+            />
+          </div>
+
+          <!-- CVV -->
+          <div class="mb-4">
+            <label for="cvv" class="block font-medium text-gray-700">CVV</label>
+            <input
+              type="number"
+              id="cvv"
+              name="cvv"
+              class="mt-1 px-4 py-2 w-full border rounded-lg appearance-none hover:appearance-none focus:ring focus:ring-blue-200 focus:border-blue-500"
+            />
+          </div>
+
+          <!-- Expiry Date -->
+          <div class="mb-4">
+            <label for="expirydate" class="block font-medium text-gray-700"
+              >Expiry Date</label
+            >
+            <input
+              type="text"
+              id="expirydate"
+              name="expirydate"
+              class="mt-1 px-4 py-2 w-full border rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-500"
+              placeholder="MM/YY"
+            />
+          </div>
+
+          <!-- Email Address -->
+          <div class="mb-4">
+            <label for="email" class="block font-medium text-gray-700"
+              >Email Address</label
+            >
+            <input
+              type="email"
+              id="email"
+              name="email"
+              class="mt-1 px-4 py-2 w-full border rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-500"
+            />
+          </div>
+
+          <!-- Submit Button -->
+          <div class="text-right mb-2">
+            <button
+              type="submit"
+              class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            >
+              Save Card
+            </button>
+          </div>
+
+          <div id="infotext"></div>
+        </form>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+      document
+        .getElementById("cardForm")
+        .addEventListener("submit", async function (event) {
+          // Prevent form submission
+          event.preventDefault();
+
+          // Validate form fields
+          let cardholder = document.getElementById("cardholder").value.trim();
+          let cardnumber = document.getElementById("cardnumber").value.trim();
+          let cvv = document.getElementById("cvv").value.trim();
+          let expirydate = document.getElementById("expirydate").value.trim();
+          let email = document.getElementById("email").value.trim();
+          let infotext = document.getElementById("infotext");
+          let expiryRegex = /^(0[1-9]|1[0-2])\/\d{2}$/;
+          let cvvRegex = /^[0-9]{3}$/;
+          let cardnumberRegex = /^[0-9]{16}$/;
+          let nameRegex = /^[a-zA-Z ]+$/;
+          let banner = document.getElementById("banner");
+          if (
+            cardholder === "" ||
+            cardnumber === "" ||
+            cvv === "" ||
+            expirydate === "" ||
+            email === ""
+          ) {
+            infotext.innerHTML =
+              "<p class='bg-rose-700 text-white p-2'>please fill in all fields </p>";
+            return;
+          }
+          if (!nameRegex.test(cardholder)) {
+            infotext.innerHTML =
+              "<p class='bg-rose-700 text-white p-2'>Please enter a valid cardholder's name. </p>";
+
+            return;
+          }
+          if (!expiryRegex.test(expirydate)) {
+            infotext.innerHTML =
+              "<p class='bg-rose-700 text-white p-2'>Expiry date must be in MM/YY format. </p>";
+
+            return;
+          }
+
+          if (!cvvRegex.test(cvv)) {
+            infotext.innerHTML =
+              "<p class='bg-rose-700 text-white'>Please enter a valid CVV (3 digits). </p>";
+            return;
+          }
+
+          // Submit the form if validation is successful
+          const data = {
+            cvv,
+            expiry_date: expirydate,
+            cardholder,
+            card_number: cardnumber,
+            email,
+          };
+          try {
+            const response = await axios.post(
+              "http://localhost:8000/api/cards/",
+              data
+            );
+
+            if (response) {
+              infotext.innerHTML =
+                "<p class='bg-lime-700 text-white'>Created </p>";
+              banner.innerHTML = "";
+            }
+          } catch (error) {
+            console.log(error);
+            if (error) {
+              infotext.innerHTML = "";
+              let html = "";
+              Object.values(error.response.data).forEach((value) => {
+                html += `<p class='text-rose-700 '>${value} </p>`;
+              });
+              banner.innerHTML = html;
+            }
+          }
+        });
+    </script>
+  </body>
+</html>
